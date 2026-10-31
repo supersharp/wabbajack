@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -34,10 +34,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private (Version Version, long Size, Func<Task<Uri>> Uri) _version;
     // WABBAJACK_LAUNCHER_RELEASES points the launcher at another release list, to test a launcher against
-    // releases that are not published; unset, it reads Wabbajack's own.
+    // releases that are not published; unset, it reads this fork's releases. Nexus is no longer consulted by
+    // default: its Wabbajack page carries upstream builds, which would replace this fork with the official app.
     public Uri GITHUB_REPO = new(Environment.GetEnvironmentVariable("WABBAJACK_LAUNCHER_RELEASES") is {Length: > 0} url
         ? url
-        : "https://api.github.com/repos/wabbajack-tools/wabbajack/releases");
+        : "https://api.github.com/repos/supersharp/wabbajack/releases");
     private readonly NexusApi _nexusApi;
     private readonly HttpDownloader _downloader;
     private readonly ITokenProvider<NexusOAuthState> _tokenProvider;
@@ -90,7 +91,9 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
 
-            if (_tokenProvider.HaveToken())
+            // Opt-in only. A logged-in premium account used to make Nexus the first source, and the Nexus
+            // Wabbajack page publishes upstream releases rather than this fork's.
+            if (Environment.GetEnvironmentVariable("WABBAJACK_NEXUS_RELEASES") == "1" && _tokenProvider.HaveToken())
             {
                 try
                 {

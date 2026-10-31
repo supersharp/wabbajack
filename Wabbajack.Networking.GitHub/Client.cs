@@ -92,6 +92,6 @@ public class Client
 
     public async Task<IReadOnlyList<RepositoryContributor>> GetWabbajackContributors()
     {
-        return await _client.Repository.GetAllContributors("wabbajack-tools", "wabbajack");
+        return await _client.Repository.GetAllContributors("supersharp", "wabbajack");
     }
 }

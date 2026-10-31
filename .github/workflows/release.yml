@@ -94,7 +94,7 @@ jobs:
           description: |
             Version - ${{ steps.build.outputs.version }} - download this file
 
-            Changelog: https://github.com/wabbajack-tools/wabbajack/releases/tag/${{ steps.build.outputs.version }}
+            Changelog: https://github.com/supersharp/wabbajack/releases/tag/${{ steps.build.outputs.version }}
           category: main
 
       - name: Upload full release to Nexus Mods
@@ -201,7 +201,7 @@ jobs:
           description: |
             Version - ${{ steps.version.outputs.version }} - Linux (beta): unpack and run Wabbajack/Wabbajack
 
-            Changelog: https://github.com/wabbajack-tools/wabbajack/releases/tag/${{ steps.version.outputs.version }}
+            Changelog: https://github.com/supersharp/wabbajack/releases/tag/${{ steps.version.outputs.version }}
           category: main
 
       - name: Upload full Linux release to Nexus Mods

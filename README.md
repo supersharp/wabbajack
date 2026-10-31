@@ -1,8 +1,11 @@
 # Wabbajack
 
+> This is the [supersharp fork](https://github.com/supersharp/wabbajack) of Wabbajack. Its launcher and app
+> check this repository for updates, not the upstream project.
+
 [![Discord](https://img.shields.io/discord/605449136870916175)](https://www.wabbajack.org/discord)
-[![CI Tests](https://github.com/wabbajack-tools/wabbajack/actions/workflows/tests.yaml/badge.svg)](https://github.com/wabbajack-tools/wabbajack/actions/workflows/tests.yaml)
-[![GitHub all releases](https://img.shields.io/github/downloads/wabbajack-tools/wabbajack/total)](https://github.com/wabbajack-tools/wabbajack/releases)
+[![CI Tests](https://github.com/supersharp/wabbajack/actions/workflows/tests.yaml/badge.svg)](https://github.com/supersharp/wabbajack/actions/workflows/tests.yaml)
+[![GitHub all releases](https://img.shields.io/github/downloads/supersharp/wabbajack/total)](https://github.com/supersharp/wabbajack/releases)
 
 Wabbajack is an automated Modlist Installer that can reproduce an entire modding setup on another machine without bundling any assets or re-distributing any mods.
 

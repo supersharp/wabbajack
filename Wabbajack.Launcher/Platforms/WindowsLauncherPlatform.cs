@@ -12,8 +12,9 @@ namespace Wabbajack.Launcher.Platforms;
 
 /// <summary>
 ///     The launcher on Windows, as it has always behaved, since launchers already installed cannot be updated and
-///     every new one has to agree with them: a premium Nexus login first, then the GitHub release with the highest
-///     four-number tag and its {tag}.zip, unpacked into a version folder in the working directory.
+///     every new one has to agree with them: the GitHub release with the highest four-number tag and its
+///     {tag}.zip, unpacked into a version folder in the working directory. The fork reads GitHub by default;
+///     Nexus is only consulted with <c>WABBAJACK_NEXUS_RELEASES=1</c>.
 /// </summary>
 public sealed class WindowsLauncherPlatform : ILauncherPlatform
 {

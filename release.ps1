@@ -185,5 +185,5 @@ Invoke-Step "Creating GitHub draft release" {
 
 Invoke-Step "Build & package complete" {
     Write-Host "`nReady for upload. Version: $($script:version)" -ForegroundColor Green
-    Write-Host "  GitHub draft: https://github.com/wabbajack-tools/wabbajack/releases/tag/$($script:version)" -ForegroundColor Green
+    Write-Host "  GitHub draft: https://github.com/supersharp/wabbajack/releases/tag/$($script:version)" -ForegroundColor Green
 }

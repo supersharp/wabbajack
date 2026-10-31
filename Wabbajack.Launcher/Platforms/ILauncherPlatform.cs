@@ -22,8 +22,8 @@ public record NexusFile(string Name, int Category, int FileId, long Size);
 public interface ILauncherPlatform
 {
     /// <summary>
-    ///     The file to install from Wabbajack's Nexus page, which a premium login is asked for before GitHub; null
-    ///     when the page has none for this platform. Downloading through Nexus counts on the mod page.
+    ///     The file to install from Wabbajack's Nexus page. Opt-in only for this fork (<c>WABBAJACK_NEXUS_RELEASES=1</c>),
+    ///     because that page publishes upstream builds; null when the page has none for this platform.
     /// </summary>
     (Version Version, NexusFile File)? PickNexusFile(IReadOnlyList<NexusFile> files);
 

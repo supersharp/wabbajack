@@ -29,11 +29,12 @@ namespace Wabbajack.App.Avalonia.Services;
 /// </summary>
 public class LauncherUpdater(ILogger<LauncherUpdater> logger, HttpClient http, Client wjClient)
 {
-    // WABBAJACK_LAUNCHER_RELEASES, the launcher's own, points this at another release list for testing.
+    // This build updates itself from supersharp/wabbajack, not the upstream project. WABBAJACK_LAUNCHER_RELEASES
+    // still points this at another release list for testing.
     private static readonly Uri Releases = new(
         Environment.GetEnvironmentVariable("WABBAJACK_LAUNCHER_RELEASES") is {Length: > 0} url
             ? url
-            : "https://api.github.com/repos/wabbajack-tools/wabbajack/releases");
+            : "https://api.github.com/repos/supersharp/wabbajack/releases");
 
     /// <summary>Where the digest of the launcher asset last installed is kept, for a launcher that is not the asset.</summary>
     private const string InstalledDigestFile = ".launcher-sha256";

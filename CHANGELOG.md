@@ -1,5 +1,11 @@
 ### Changelog
 
+#### Version - 4.3.3.0 - 10/31/2026
+* Game install folders can now be set by hand, for copies Steam, GOG, Epic, Origin or the EA app cannot find. Settings → Game folders remembers the folder and uses it before automatic detection for installing and compiling. Choosing a folder with Locate game in preflight saves it too.
+* Added `set-game-location --game <name> --path <folder>` and `--clear` to the CLI for the same manual game folders.
+* Fixed the Game folders card's status text running past the card, and gave the game picker a taller, roomier drop-down.
+* Launcher and app update checks now read releases from `supersharp/wabbajack` instead of the upstream repository; the Nexus release check is opt-in only (`WABBAJACK_NEXUS_RELEASES=1`). GitHub links and release links point at the fork.
+
 #### Version - TBD - TBD
 * Metrics improvements
 
