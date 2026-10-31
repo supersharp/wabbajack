@@ -2,9 +2,7 @@
 
 > This is the [supersharp fork](https://github.com/supersharp/wabbajack) of Wabbajack. Its launcher and app
 > check this repository for updates, not the upstream project.
-
-[![CI Tests](https://github.com/supersharp/wabbajack/actions/workflows/tests.yaml/badge.svg)](https://github.com/supersharp/wabbajack/actions/workflows/tests.yaml)
-[![GitHub all releases](https://img.shields.io/github/downloads/supersharp/wabbajack/total)](https://github.com/supersharp/wabbajack/releases)
+> The builds are unsigned.
 
 Wabbajack is an automated Modlist Installer that can reproduce an entire modding setup on another machine without bundling any assets or re-distributing any mods.
 
