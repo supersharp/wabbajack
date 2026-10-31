@@ -14,6 +14,7 @@ using Wabbajack.App.Avalonia.LoginManagers;
 using Wabbajack.App.Avalonia.Messages;
 using Wabbajack.App.Avalonia.Services;
 using Wabbajack.App.Avalonia.Util;
+using Wabbajack.Downloaders.GameFile;
 using Wabbajack.DTOs.Logins;
 using Wabbajack.Paths;
 using Wabbajack.Services.OSIntegrated;
@@ -32,6 +33,8 @@ public partial class SettingsVM : ViewModel
 
         LoginVM = new LoginManagerVM(provider.GetRequiredService<IEnumerable<INeedsLogin>>());
         PerformanceVM = new PerformanceSettingsVM(provider.GetRequiredService<ResourceSettingsManager>());
+        GameLocationsVM = new GameLocationsVM(provider.GetRequiredService<IManualGameLocationStore>(),
+            provider.GetRequiredService<IGameLocator>());
         AboutVM = provider.GetRequiredService<AboutVM>();
 
         LaunchCLICommand = ReactiveCommand.CreateFromTask(LaunchCLI);
@@ -60,6 +63,7 @@ public partial class SettingsVM : ViewModel
 
     public LoginManagerVM LoginVM { get; }
     public PerformanceSettingsVM PerformanceVM { get; }
+    public GameLocationsVM GameLocationsVM { get; }
     public AboutVM AboutVM { get; }
 
     public ICommand LaunchCLICommand { get; }

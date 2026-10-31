@@ -72,14 +72,25 @@ public sealed class GameInstalledCheck : IPreflightCheck
         }
         else if (!ctx.GameLocator.TryFindLocation(game, out folder))
         {
-            var otherGame = meta.CommonlyConfusedWith
-                .Where(g => ctx.GameLocator.IsInstalled(g)).Select(g => g.MetaData()).FirstOrDefault();
-            notFound = otherGame != null
-                ? $"In order to do a proper install Wabbajack needs to know where your {meta.HumanFriendlyGameName} folder resides. " +
-                  $"However this game doesn't seem to be installed, we did however find an installed copy of " +
-                  $"{otherGame.HumanFriendlyGameName}, did you install the wrong game?"
-                : $"In order to do a proper install Wabbajack needs to know where your {meta.HumanFriendlyGameName} folder resides. " +
-                  "However this game doesn't seem to be installed.";
+            // A folder the user set in Settings is an answer, not a suggestion: when it is gone say so,
+            // rather than falling back to "this game is not installed" and leaving them to guess.
+            if (ctx.ManualGameLocations?.TryGet(game, out var manual) == true)
+            {
+                notFound = $"The folder configured for {meta.HumanFriendlyGameName} (\"{manual}\") does not exist. " +
+                           "Choose the folder again, or clear the manual location in Settings.";
+            }
+            else
+            {
+                var otherGame = meta.CommonlyConfusedWith
+                    .Where(g => ctx.GameLocator.IsInstalled(g)).Select(g => g.MetaData()).FirstOrDefault();
+                notFound = otherGame != null
+                    ? $"In order to do a proper install Wabbajack needs to know where your {meta.HumanFriendlyGameName} folder resides. " +
+                      $"However this game doesn't seem to be installed, we did however find an installed copy of " +
+                      $"{otherGame.HumanFriendlyGameName}, did you install the wrong game?"
+                    : $"In order to do a proper install Wabbajack needs to know where your {meta.HumanFriendlyGameName} folder resides. " +
+                      "However this game doesn't seem to be installed.";
+            }
+
             folder = default;
         }
         else if (!folder.DirectoryExists())

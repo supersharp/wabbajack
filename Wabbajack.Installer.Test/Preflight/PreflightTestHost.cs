@@ -146,11 +146,11 @@ public sealed class PreflightTestHost : IDisposable
 
     /// <param name="wjClient">A client over a recording handler, for tests that check what is sent to the build server.</param>
     public PreflightContext Context(PreflightOptions? options = null, IManualDownloadAcquirer? acquirer = null,
-        Client? wjClient = null)
+        Client? wjClient = null, IManualGameLocationStore? manualGameLocations = null)
     {
         return new PreflightContext(Config, options ?? DefaultOptions(), Locator, Cache, Dispatcher, DownloadLimiter,
             wjClient ?? _provider.GetRequiredService<Client>(), Nexus, Policy, acquirer ?? Acquirer, Limiter, NullLogger.Instance,
-            Restorer);
+            Restorer, manualGameLocations);
     }
 
     /// <summary>

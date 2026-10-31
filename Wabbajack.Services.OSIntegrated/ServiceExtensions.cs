@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Wabbajack.Common;
 using Wabbajack.Compiler;
@@ -122,6 +123,10 @@ public static class ServiceExtensions
         service.AddSingleton<SettingsManager>();
         service.AddSingleton<ResourceSettingsManager>();
         service.AddSingleton<MainSettings>(s => GetAppSettings(s, MainSettings.SettingsFileName));
+
+        // A host that registers its own store before this keeps it; this is what makes a folder the user
+        // named outrank the Steam/GOG/Epic handlers. Added before the locator so its constructor can take it.
+        service.TryAddSingleton<IManualGameLocationStore, ManualGameLocationStore>();
 
         // Resources
 

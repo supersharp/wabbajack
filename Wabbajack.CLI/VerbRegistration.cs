@@ -55,6 +55,8 @@ public static class CommandLineBuilderExtensions
         services.AddSingleton<Reset>();
         CommandLineBuilder.RegisterCommand<Restart>(Restart.Definition, c => ((Restart)c).Run);
         services.AddSingleton<Restart>();
+        CommandLineBuilder.RegisterCommand<SetGameLocation>(SetGameLocation.Definition, c => ((SetGameLocation)c).Run);
+        services.AddSingleton<SetGameLocation>();
         CommandLineBuilder.RegisterCommand<SteamAppTicket>(SteamAppTicket.Definition, c => ((SteamAppTicket)c).Run);
         services.AddSingleton<SteamAppTicket>();
         CommandLineBuilder.RegisterCommand<SteamFetchFile>(SteamFetchFile.Definition, c => ((SteamFetchFile)c).Run);

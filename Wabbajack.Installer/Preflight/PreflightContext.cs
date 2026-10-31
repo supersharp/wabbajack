@@ -20,9 +20,11 @@ public sealed class PreflightContext
         FileHashCache hashCache, DownloadDispatcher dispatcher, IResource<DownloadDispatcher> downloadLimiter,
         Client wjClient, INexusLoginProbe nexusLogin, IDownloadPolicySource downloadPolicy,
         IManualDownloadAcquirer acquirer, IResource<IInstaller> limiter, ILogger logger,
-        IGameFileRestorer? gameFileRestorer = null)
+        IGameFileRestorer? gameFileRestorer = null,
+        IManualGameLocationStore? manualGameLocations = null)
     {
         GameFileRestorer = gameFileRestorer;
+        ManualGameLocations = manualGameLocations;
         Config = config;
         Options = options;
         GameLocator = gameLocator;
@@ -68,6 +70,13 @@ public sealed class PreflightContext
     ///     check, reporting a broken game install exactly as it always did.
     /// </summary>
     public IGameFileRestorer? GameFileRestorer { get; }
+
+    /// <summary>
+    ///     Where a folder the user picks with "Locate game" is remembered, or null in a host that has
+    ///     nowhere to keep one. Optional for the same reason the restorer is: a host without settings must
+    ///     still run every check, it simply does not remember the answer for the next run.
+    /// </summary>
+    public IManualGameLocationStore? ManualGameLocations { get; }
 
     public IResource<IInstaller> Limiter { get; }
     public ILogger Logger { get; }

@@ -1,0 +1,76 @@
+<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:vm="using:Wabbajack.App.Avalonia.ViewModels.Settings"
+                          xmlns:common="using:Wabbajack.App.Avalonia.Views.Common"
+                          xmlns:c="using:Wabbajack.App.Avalonia.Controls"
+                          x:Class="Wabbajack.App.Avalonia.Views.Settings.GameLocationsView"
+                          x:TypeArguments="vm:GameLocationsVM"
+                          x:DataType="vm:GameLocationsVM">
+    <Border Classes="settingsCard">
+        <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,8,*">
+            <TextBlock Classes="cardHeading" Text="Game folders" />
+            <TextBlock Grid.Row="1" FontWeight="Normal" Margin="0,4,0,12" LineSpacing="4" TextWrapping="Wrap">
+                <Run Text="Wabbajack finds games through Steam, GOG, Epic, Origin and the EA app." />
+                <Run Text="If your copy lives somewhere those cannot see, choose it here:" />
+                <Run Text="the folder you set is used before automatic detection, for installing and compiling alike." />
+            </TextBlock>
+
+            <StackPanel Grid.Row="2" Spacing="8">
+                <!--
+                    Full width, with a minimum so a narrow Settings column still gives the game list room,
+                    and a taller row so the drop-down is a list rather than a thin strip.
+                -->
+                <ComboBox ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                          MinWidth="280" MinHeight="36" MaxDropDownHeight="360"
+                          AutomationProperties.AutomationId="GameLocationGame"
+                          ToolTip.Tip="The game whose folder you want to set">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:GameOption">
+                            <TextBlock Padding="2,8,0,8" Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <common:FilePicker PickerVM="{Binding Picker}" Icon="Folder"
+                                   Watermark="C:\...\Game folder" />
+                <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <c:WJButton Text="Save folder" Icon="Save" Command="{Binding SaveCommand}"
+                                AutomationProperties.AutomationId="SaveGameLocationButton" />
+                    <c:WJButton Text="Refresh" Icon="ArrowClockwise" ButtonStyle="Mono"
+                                Command="{Binding RefreshCommand}"
+                                AutomationProperties.AutomationId="RefreshGameLocationsButton" />
+                </StackPanel>
+                <!--
+                    Its own row, and wrapping: inside the horizontal button strip it was measured with
+                    unlimited width and ran out of the card for any message longer than a few words.
+                -->
+                <TextBlock FontWeight="Normal" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="4" MaxHeight="220" Margin="0,8,0,0"
+                          VerticalScrollBarVisibility="Auto" Background="Transparent">
+                <ItemsControl ItemsSource="{Binding Locations}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:GameLocationRowVM">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                                <StackPanel Spacing="2">
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
+                                    <TextBlock FontWeight="Normal" Foreground="{StaticResource PrimaryBrush}"
+                                               TextTrimming="CharacterEllipsis" Text="{Binding Path}" />
+                                    <TextBlock FontWeight="Normal" Foreground="{StaticResource SecondaryBrush}"
+                                               TextWrapping="Wrap" Text="{Binding StatusText}" />
+                                </StackPanel>
+                                <c:WJButton Grid.Column="1" Text="Clear" ButtonStyle="Mono"
+                                            VerticalAlignment="Center"
+                                            IsVisible="{Binding IsManual}"
+                                            Command="{Binding ClearCommand}"
+                                            ToolTip.Tip="Forget this folder and locate the game automatically" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</rxui:ReactiveUserControl>

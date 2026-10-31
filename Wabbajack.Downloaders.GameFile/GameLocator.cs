@@ -32,10 +32,17 @@ public class GameLocator : IGameLocator
     
     private readonly Dictionary<Game, AbsolutePath> _locationCache;
     private readonly ILogger<GameLocator> _logger;
+    private readonly IManualGameLocationStore _manualLocations;
 
     public GameLocator(ILogger<GameLocator> logger)
+        : this(logger, NullManualGameLocationStore.Instance)
+    {
+    }
+
+    public GameLocator(ILogger<GameLocator> logger, IManualGameLocationStore manualLocations)
     {
         _logger = logger;
+        _manualLocations = manualLocations ?? NullManualGameLocationStore.Instance;
         var fileSystem = NexusMods.Paths.FileSystem.Shared;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -187,6 +194,11 @@ public class GameLocator : IGameLocator
 
     public bool TryFindLocation(Game game, out AbsolutePath path)
     {
+        // A folder the user named beats anything discovered here, and is deliberately not cached: changing
+        // or clearing it in Settings must be visible to the next lookup without restarting the app.
+        if (TryGetManualLocation(game, out path))
+            return true;
+
         lock (_locationCache)
         {
             if (_locationCache.TryGetValue(game, out path))
@@ -199,6 +211,27 @@ public class GameLocator : IGameLocator
             }
         }
 
+        return false;
+    }
+
+    /// <summary>
+    ///     The folder the user set for this game, if it is still there. A stored folder that has been moved
+    ///     or deleted falls through to ordinary detection rather than hiding a game the machine can still
+    ///     find; Settings shows the missing entry so it can be corrected or cleared.
+    /// </summary>
+    private bool TryGetManualLocation(Game game, out AbsolutePath path)
+    {
+        if (_manualLocations.TryGet(game, out path))
+        {
+            if (path.DirectoryExists())
+                return true;
+
+            _logger.LogWarning(
+                "The folder configured for {Game} ({Folder}) no longer exists; looking for the game in the stores",
+                game, path);
+        }
+
+        path = default;
         return false;
     }
 

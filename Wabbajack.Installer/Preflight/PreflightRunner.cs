@@ -89,7 +89,9 @@ public sealed class PreflightRunner
             sp.GetRequiredService<IResource<IInstaller>>(),
             sp.GetRequiredService<ILogger<PreflightRunner>>(),
             // Optional: a host with no way to fetch game files simply does not offer the repair.
-            sp.GetService<IGameFileRestorer>());
+            sp.GetService<IGameFileRestorer>(),
+            // Optional: a host with nowhere to save a manual folder still lets one be picked for this run.
+            sp.GetService<IManualGameLocationStore>());
         return new PreflightRunner(sp.GetServices<IPreflightCheck>(), context);
     }
 
@@ -286,6 +288,13 @@ public sealed class PreflightRunner
     public void SetGameFolder(AbsolutePath folder)
     {
         Context.Config.GameFolder = folder;
+
+        // Remembered for the next run as well. Picking a folder here is the moment a user tells Wabbajack
+        // where a game it could not detect lives, and losing that answer on restart is what would make the
+        // same install ask again. A host that cannot save it still gets the folder for this run.
+        if (Context.ManualGameLocations is { } store)
+            _ = RememberLocation(store, Context.Config.Game, folder);
+
         if (!_byId.TryGetValue(PreflightCheckIds.GameInstalled, out var entry)) return;
 
         var changed = new List<CheckStatus>();
@@ -299,6 +308,19 @@ public sealed class PreflightRunner
         }
 
         foreach (var status in changed) Raise(new CheckChanged(status));
+    }
+
+    /// <summary>Saves without making a folder pick wait on, or fail because of, the settings file.</summary>
+    private async Task RememberLocation(IManualGameLocationStore store, Game game, AbsolutePath folder)
+    {
+        try
+        {
+            await store.Set(game, folder);
+        }
+        catch (Exception ex)
+        {
+            Context.Logger.LogWarning(ex, "Could not remember the folder {Folder} for {Game}", folder, game);
+        }
     }
 
     private Entry Find(string id)

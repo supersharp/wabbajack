@@ -16,6 +16,8 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddStandardGameLocator(this IServiceCollection services)
     {
+        // The locator takes an optional store; its one-argument constructor is what a host with nowhere to
+        // keep manual folders resolves, so no null implementation needs registering here.
         return services.AddAllSingleton<IGameLocator, GameLocator>();
     }
 }

@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Wabbajack.Downloaders.GameFile;
@@ -7,6 +8,7 @@ using Wabbajack.DTOs;
 using Wabbajack.Installer.Preflight;
 using Wabbajack.Installer.Preflight.Checks;
 using Wabbajack.Installer.Test.Preflight.Fakes;
+using Wabbajack.Paths;
 using Wabbajack.Paths.IO;
 using Xunit;
 
@@ -295,5 +297,44 @@ public class GameInstalledCheckTests : IDisposable
         Assert.Equal(fallout, ctx.State.OtherGameFolders[Game.Fallout4]);
         Assert.False(ctx.State.OtherGameFolders.ContainsKey(Game.Oblivion));
         Assert.Contains("Oblivion", result.Detail);
+    }
+
+    /// <summary>
+    ///     A folder the user set in Settings is their answer, so a missing one is reported as that folder
+    ///     rather than as an unknown install - and Locate game is still offered to correct it.
+    /// </summary>
+    [Fact]
+    public async Task AManualFolderThatIsGoneIsNamed()
+    {
+        _host.Locator.Games.Clear();
+        var missing = _host.Manager.CreateFolder().Path.Combine("moved");
+        var ctx = _host.Context(manualGameLocations: new StoredLocations(Game.SkyrimSpecialEdition, missing));
+
+        var result = await _check.Run(ctx, _progress, CancellationToken.None);
+
+        Assert.Equal(PreflightState.Failed, result.State);
+        Assert.Contains("The folder configured for Skyrim Special Edition", result.Message);
+        Assert.Contains(missing.ToString(), result.Message);
+        Assert.Contains(PreflightAction.BrowseGameFolder, result.Actions!);
+    }
+
+    private sealed class StoredLocations : IManualGameLocationStore
+    {
+        private readonly Dictionary<Game, AbsolutePath> _paths;
+
+        public StoredLocations(Game game, AbsolutePath path)
+        {
+            _paths = new Dictionary<Game, AbsolutePath> {{game, path}};
+        }
+
+        public bool TryGet(Game game, out AbsolutePath path) => _paths.TryGetValue(game, out path);
+
+        public IReadOnlyDictionary<Game, AbsolutePath> All => _paths;
+
+        public Task Set(Game game, AbsolutePath path, CancellationToken token = default)
+            => throw new NotSupportedException();
+
+        public Task Clear(Game game, CancellationToken token = default)
+            => throw new NotSupportedException();
     }
 }
