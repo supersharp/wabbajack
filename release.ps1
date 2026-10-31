@@ -90,7 +90,21 @@ Invoke-Step "Building projects" {
 
 # --- Step 3: Code sign ---
 
+# Signing is an upstream release requirement. A fork has no valid certificate for Wabbajack's binaries, and
+# CodeSignTool answers an invalid grant by leaving every file unsigned; requiring a signature there failed the
+# whole release. Skip it for any repository other than upstream, and for a local build with no credentials.
+$codeSignRequested =
+    -not [string]::IsNullOrWhiteSpace($env:CODE_SIGN_USER) -and
+    -not [string]::IsNullOrWhiteSpace($env:CODE_SIGN_PASS) -and
+    ([string]::IsNullOrWhiteSpace($env:GITHUB_REPOSITORY) -or
+     $env:GITHUB_REPOSITORY -eq 'wabbajack-tools/wabbajack')
+
 Invoke-Step "Code signing (OTP will be prompted)" {
+    if (-not $codeSignRequested) {
+        Write-Host "No Wabbajack signing certificate for $($env:GITHUB_REPOSITORY); shipping unsigned binaries." -ForegroundColor Yellow
+        return
+    }
+
     $codeSignBat = Join-Path $codeSignDir "CodeSignTool.bat"
     $filesToSign = @(
         "$publishDir\app\Wabbajack.exe",

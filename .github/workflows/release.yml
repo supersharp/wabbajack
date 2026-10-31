@@ -62,6 +62,7 @@ jobs:
           global-json-file: global.json
 
       - name: Download CodeSignTool
+        if: ${{ github.repository == 'wabbajack-tools/wabbajack' }}
         shell: pwsh
         run: |
           $url = "https://github.com/SSLcom/CodeSignTool/releases/download/v1.3.2/CodeSignTool-v1.3.2-windows.zip"
@@ -84,6 +85,7 @@ jobs:
       # --- Nexus Mods uploads (official action) ---
 
       - name: Upload launcher to Nexus Mods
+        if: ${{ github.repository == 'wabbajack-tools/wabbajack' }}
         uses: Nexus-Mods/upload-action@v1.0.0-beta.8
         with:
           api_key: ${{ secrets.NEXUS_API_KEY }}
@@ -98,6 +100,7 @@ jobs:
           category: main
 
       - name: Upload full release to Nexus Mods
+        if: ${{ github.repository == 'wabbajack-tools/wabbajack' }}
         uses: Nexus-Mods/upload-action@v1.0.0-beta.8
         with:
           api_key: ${{ secrets.NEXUS_API_KEY }}
@@ -138,8 +141,8 @@ jobs:
           $header = @"
           $version is released
 
-          Please download via the launcher or via the link on the website: https://www.wabbajack.org/
-          Or on the Nexus: https://www.nexusmods.com/site/mods/403
+          Please download via the launcher or from the GitHub release:
+          https://github.com/${{ github.repository }}/releases/tag/$version
           "@
           $header = ($header -split "`n" | ForEach-Object { $_.Trim() }) -join "`n"
 
@@ -190,7 +193,7 @@ jobs:
       # Nexus file whose name ends in .zip and parses as a version, so these names must keep their .tar.gz.
 
       - name: Upload Linux launcher to Nexus Mods
-        if: ${{ vars.NEXUS_LINUX_LAUNCHER_FILE_ID != '' }}
+        if: ${{ github.repository == 'wabbajack-tools/wabbajack' && vars.NEXUS_LINUX_LAUNCHER_FILE_ID != '' }}
         uses: Nexus-Mods/upload-action@v1.0.0-beta.8
         with:
           api_key: ${{ secrets.NEXUS_API_KEY }}
@@ -205,7 +208,7 @@ jobs:
           category: main
 
       - name: Upload full Linux release to Nexus Mods
-        if: ${{ vars.NEXUS_LINUX_FILE_ID != '' }}
+        if: ${{ github.repository == 'wabbajack-tools/wabbajack' && vars.NEXUS_LINUX_FILE_ID != '' }}
         uses: Nexus-Mods/upload-action@v1.0.0-beta.8
         with:
           api_key: ${{ secrets.NEXUS_API_KEY }}

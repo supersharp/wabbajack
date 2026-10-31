@@ -5,6 +5,7 @@
 * Added `set-game-location --game <name> --path <folder>` and `--clear` to the CLI for the same manual game folders.
 * Fixed the Game folders card's status text running past the card, and gave the game picker a taller, roomier drop-down.
 * Launcher and app update checks now read releases from `supersharp/wabbajack` instead of the upstream repository; the Nexus release check is opt-in only (`WABBAJACK_NEXUS_RELEASES=1`). GitHub links and release links point at the fork.
+* Fork release automation skips upstream code signing and Nexus uploads, so releases can be built unsigned from GitHub.
 * Metrics improvements
 
 #### Version - 4.3.2.1 - 10/18/2026
