@@ -180,6 +180,33 @@ if (-not $releaseNotes) {
 Invoke-Step "Creating GitHub draft release" {
     Push-Location $repoRoot
 
+    # A version is released exactly once. `gh release create --draft` does not refuse a tag
+    # that already has a release: it quietly adds a second draft to it, and the publish step
+    # below then edits the published release while the new draft is stranded. So the version
+    # is checked first, and an unfinished draft from an interrupted run is discarded rather
+    # than added to (the assets are rebuilt by this run anyway).
+    $repoSlug = if ($env:GITHUB_REPOSITORY) { $env:GITHUB_REPOSITORY } else {
+        ((git remote get-url origin) -replace '^.*github\.com[:/]', '') -replace '\.git\s*$', ''
+    }
+    $releasesJson = gh api "repos/$repoSlug/releases?per_page=100" 2>$null
+    if ($LASTEXITCODE -eq 0 -and $releasesJson) {
+        $sameVersion = @($releasesJson | ConvertFrom-Json | Where-Object { $_.tag_name -eq $script:version })
+
+        $published = @($sameVersion | Where-Object { -not $_.draft })
+        if ($published.Count -gt 0) {
+            Write-Host "ERROR: $($script:version) is already released: https://github.com/$repoSlug/releases/tag/$($script:version)" -ForegroundColor Red
+            Write-Host "Bump the version in CHANGELOG.md, commit, and push before running this script again." -ForegroundColor Red
+            Pop-Location
+            exit 1
+        }
+
+        foreach ($stale in $sameVersion) {
+            Write-Host "Discarding unfinished draft for $($script:version) (id $($stale.id))" -ForegroundColor Yellow
+            gh api -X DELETE "repos/$repoSlug/releases/$($stale.id)" | Out-Null
+            Assert-ExitCode "gh api -X DELETE release $($stale.id)"
+        }
+    }
+
     $notesFile = [System.IO.Path]::GetTempFileName()
     Set-Content $notesFile $releaseNotes -NoNewline
 

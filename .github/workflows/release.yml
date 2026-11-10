@@ -184,9 +184,12 @@ jobs:
           echo "version=$(basename "$tarball" -linux-x64.tar.gz)" >> "$GITHUB_OUTPUT"
 
       - name: Attach the Linux builds to the release
+        # --clobber so re-running this job after a partial upload replaces what already
+        # landed instead of failing on an asset name that exists.
         run: |
           gh release upload "${{ steps.version.outputs.version }}" linux-release/*.tar.gz \
-            --repo "${{ github.repository }}"
+            --repo "${{ github.repository }}" \
+            --clobber
 
       # Once their file entries exist on the Nexus page and their ids are set as the repository variables
       # NEXUS_LINUX_FILE_ID and NEXUS_LINUX_LAUNCHER_FILE_ID; skipped until then. Old launchers take the first
